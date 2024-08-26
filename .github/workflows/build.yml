@@ -1,11 +1,13 @@
 name: SonarCloud
 
+# Trigger the workflow on push or pull request events to the main branch
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
 
 jobs:
   build:
@@ -19,14 +21,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensures full repository checkout for accurate analysis
+          fetch-depth: 0
 
       - name: Install sonar-scanner and build-wrapper
         uses: SonarSource/sonarcloud-github-c-cpp@v3
 
       - name: Run build-wrapper
         run: |
-          build-wrapper-macosx-x86 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} <insert_your_clean_build_command>
+          build-wrapper-macosx-x86 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} make clean && make
 
       - name: Run sonar-scanner
         env:
